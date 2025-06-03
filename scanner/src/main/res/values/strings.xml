@@ -1,0 +1,4 @@
+<resources>
+    <string name="poweredby">Powered by PositrRx</string>
+    <string name="scan_code">Scan QR/Bar code</string>
+</resources>

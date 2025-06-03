@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bottom_sheet_elevation">8dp</dimen>
+    <dimen name="padding_horizontal">16dp</dimen>
+    <dimen name="padding_vertical">12dp</dimen>
+    <dimen name="logo_size">58dp</dimen>
+    <dimen name="margin_between_logo_text">8dp</dimen>
+</resources>
