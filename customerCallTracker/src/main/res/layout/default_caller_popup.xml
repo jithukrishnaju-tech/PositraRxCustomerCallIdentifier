@@ -6,42 +6,50 @@
     android:background="@android:color/transparent">
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="8dp"
-        android:background="@color/blue"
         android:foreground="?android:attr/selectableItemBackground"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/popupView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/blue"
             android:padding="16dp">
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/headerText"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="PositraRx Customer"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/closeButton" />
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/verified_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toEndOf="@+id/headerText"
+                android:layout_marginStart="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                android:src="@drawable/verified"/>
+
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/closeButton"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@android:drawable/ic_menu_close_clear_cancel"
-                app:tint="#FFFFFF"
+                android:src="@drawable/close_btn"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/callerName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -54,7 +62,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/phoneNumber"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -66,7 +74,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/poweredByText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

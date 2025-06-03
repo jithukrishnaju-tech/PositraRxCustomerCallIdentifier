@@ -6,4 +6,6 @@
     <color name="blue_dark">#003464</color>
     <color name="colorPrimary">@color/blue</color>
     <color name="colorPrimaryDark">@color/blue_dark</color>
+    <color name="yellow">#FFC107</color>
+    <color name="red">#F44336</color>
 </resources>

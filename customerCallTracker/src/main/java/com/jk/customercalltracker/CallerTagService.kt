@@ -13,9 +13,9 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import com.jk.customercalltracker.databinding.DefaultCallerPopupBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,6 +24,7 @@ import java.util.concurrent.Executors
 import kotlin.math.abs
 
 class CallerTagService : CallScreeningService() {
+    private lateinit var binding: DefaultCallerPopupBinding
     private var initialX: Int = 0
     private var initialY: Int = 0
     private var initialTouchX: Float = 0f
@@ -38,6 +39,7 @@ class CallerTagService : CallScreeningService() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onScreenCall(callDetails: Call.Details) {
+        binding = DefaultCallerPopupBinding.inflate(LayoutInflater.from(applicationContext))
         if (callDetails.callDirection != Call.Details.DIRECTION_INCOMING) {
             Log.i("CallerTagService", "Ignoring non-incoming call")
             return
@@ -45,8 +47,6 @@ class CallerTagService : CallScreeningService() {
         Log.d("CallerTagService", "Getting calls")
 
         val number = callDetails.handle?.schemeSpecificPart ?: return
-
-//        val apiCallback = CallerTagManager.getInstance().getApiCallback()
         val apiCallback = CallerTagManager.getInstance().getApiCallback()
         if (apiCallback == null) {
             Log.e("CallerTagService", "API callback not initialized")
@@ -88,31 +88,35 @@ class CallerTagService : CallScreeningService() {
             }
         }
 
-        val layoutResId = CallerTagManager.getInstance().getCustomPopupLayout()
-            ?: R.layout.default_caller_popup
-
-//        val layoutResId = CallerTagManager.getInstance().getCustomPopupLayout()
-//            ?: R.layout.default_caller_popup
-
-        popupView = LayoutInflater.from(this).inflate(layoutResId, null)
-
+        popupView = binding.root
         populatePopupData(customerData)
+        when {
+            customerData.isVerified == true && customerData.isPhoneVerified == true -> {
+                binding.popupView.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.blue))
+            }
+            customerData.isVerified == true && customerData.isPhoneVerified == false -> {
+                binding.popupView.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.yellow))
+                binding.verifiedLogo.setImageDrawable(ContextCompat.getDrawable(applicationContext, R.drawable.verified_notfull))
+            }
+            else -> {
+                binding.popupView.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.red))
+                binding.verifiedLogo.setImageDrawable(ContextCompat.getDrawable(applicationContext, R.drawable.verified_off))
+            }
+        }
 
-        val closeBtn = popupView?.findViewById<ImageView>(R.id.closeButton)
-        closeBtn?.setOnClickListener {
+        val closeBtn = binding.closeButton
+        closeBtn.setOnClickListener {
             removePopup()
         }
 
-        setupDragFunctionality(popupView!!, layoutParams!!, windowManager!!)
+        setupDragFunctionality(binding.root, layoutParams!!, windowManager!!)
         windowManager?.addView(popupView, layoutParams)
         isPopupShown = true
     }
 
     private fun populatePopupData(customerData: CustomerData) {
-        popupView?.apply {
-            findViewById<TextView>(R.id.callerName)?.text = customerData.name
-            findViewById<TextView>(R.id.phoneNumber)?.text = customerData.phoneNumber
-        }
+        binding.callerName.text = customerData.name
+        binding.phoneNumber.text = customerData.phoneNumber
     }
 
     private fun setupDragFunctionality(view: View, params: WindowManager.LayoutParams, windowManager: WindowManager) {
