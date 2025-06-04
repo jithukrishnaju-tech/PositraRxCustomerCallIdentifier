@@ -91,10 +91,10 @@ class CallerTagService : CallScreeningService() {
         popupView = binding.root
         populatePopupData(customerData)
         when {
-            customerData.isVerified == true && customerData.isPhoneVerified == true -> {
+            customerData.isVerified == true && (customerData.isPhoneVerified == true || customerData.oldVerificationMethod.equals("PHONEVERIFIED")) -> {
                 binding.popupView.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.blue))
             }
-            customerData.isVerified == true && customerData.isPhoneVerified == false -> {
+            customerData.isVerified == true && (customerData.isPhoneVerified == false || !customerData.oldVerificationMethod.equals("PHONEVERIFIED"))-> {
                 binding.popupView.setBackgroundColor(ContextCompat.getColor(applicationContext, R.color.yellow))
                 binding.verifiedLogo.setImageDrawable(ContextCompat.getDrawable(applicationContext, R.drawable.verified_notfull))
             }

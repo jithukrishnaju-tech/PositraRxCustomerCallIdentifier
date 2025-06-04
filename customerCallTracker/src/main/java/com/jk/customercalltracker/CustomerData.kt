@@ -4,5 +4,6 @@ data class CustomerData(
     val name: String,
     val phoneNumber: String,
     val isVerified: Boolean? = null,
-    val isPhoneVerified: Boolean? = null
+    val isPhoneVerified: Boolean? = null,
+    val oldVerificationMethod: String? = null
 )
