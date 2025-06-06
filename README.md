@@ -264,7 +264,7 @@ class CustomerApiService : Service() {
                 override fun checkCustomer(phoneNumber: String, onResult: (CustomerData?) -> Unit) {
                     CoroutineScope(Dispatchers.IO).launch {
                         try {
-                            val response = customerService.getCustomerDataFromPhoneNumber(cleanedPhoneNumber.toLong())
+                            val response = customerService.getCustomerDataFromPhoneNumber(phoneNumber.toLong())
                             if (response.isSuccessful) {
                                 val responseBody = response.body() as CustomerDataResponse
                                 val customerData =
