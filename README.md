@@ -20,23 +20,21 @@ A lightweight Android library for QR code and barcode scanning built using ML Ki
 
 ### Installation
 
-Add JitPack repository to your project's `build.gradle` file:
+Add JitPack repository to your project's `build.gradle.kts` file:
 
 ```gradle
 allprojects {
     repositories {
         ...
-        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 ```
 
-Add the dependency to your app's `build.gradle` file:
+Add the dependency to your app's `build.gradle.kts` file:
 
 ```gradle
-dependencies {
-    implementation 'com.github.jithukrishnaju-tech:positrarx-scanner:1.0.1'
-}
+implementation("com.github.jithukrishnaju-tech:positrarx-scanner:1.0.1")
 ```
 
 ### Requirements
@@ -165,28 +163,27 @@ A lightweight Android library for identifying incoming calls and displaying cust
 
 - Intercepts incoming calls using a `CallScreenService`
 - Displays customer information in a customizable popup using `WindowManager`
-- Operates in a foreground service to ensure functionality even if the app is closed
-- Supports custom popup layouts
-- Requires an API callback to fetch customer data
+- Library will always intercepts incoming call even if the phone is off.
+- Requires an API callback to fetch customer data by using the number which given by the library.
 
 ### Installation
 
-Add JitPack repository to your project's `build.gradle` file:
+Add JitPack repository to your project's `build.gradle.kts` file:
 
 ```gradle
 allprojects {
     repositories {
         ...
-        maven { url 'https://jitpack.io' }
+        maven { url = uri("https://jitpack.io") }
     }
 }
 ```
 
-Add the dependency to your app's `build.gradle` file:
+Add the dependency to your app's `build.gradle.kts` file:
 
 ```gradle
 dependencies {
-    implementation 'com.github.jithukrishnaju-tech:customer-call-tracker:1.0.0'
+    implementation("com.github.jithukrishnaju-tech:PositraRxCustomerCallIdentifier:1.0.6")
 }
 ```
 
@@ -219,7 +216,7 @@ dependencies {
 
 #### Setting Up the Foreground Service
 
-The library requires a foreground service to make api calls so that app will work even if the phone is off or app is destroyed. 
+The library requires a foreground service to make api calls so that app will show pop up even if the phone is off or app is destroyed. 
 
 
 #### Initializing the CallerTagManager
@@ -237,7 +234,8 @@ CallerTagManager.getInstance().initialize(object : ApiCallback {
             name = "John Doe",
             phoneNumber = cleanedPhoneNumber,
             isVerified = true,
-            isPhoneVerified = true
+            isPhoneVerified = true,
+            oldVerificationMethod = "PHONEVERIFIED"
         )
         onResult(customerData)
     }
@@ -247,10 +245,14 @@ CallerTagManager.getInstance().initialize(object : ApiCallback {
 
 #### Sample Implementation
 
-Here's a complete example of setting up the library in an foreground service:
+Here's a complete example of setting up the library in an foreground service (Make sure to call it in a foreground service)
 
 ```kotlin
+@AndroidEntryPoint
 class CustomerApiService : Service() {
+    @Inject
+    lateinit var customerService: CustomerService
+
     override fun onCreate() {
         super.onCreate()
         setupForegroundNotification()
@@ -258,33 +260,34 @@ class CustomerApiService : Service() {
     }
 
     private fun provideApiCallback(): ApiCallback {
-        return object : ApiCallback {
-            override fun checkCustomer(phoneNumber: String, onResult: (CustomerData?) -> Unit) {
-                Log.d(TAG, "checkCustomer called for $phoneNumber")
-                val cleanedPhoneNumber = phoneNumber.replace(Regex("[^0-9]"), "").takeLast(10)
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        if (BasicUtils.isNetworkAvailable(this) {
-                            val response =
-                                customerService.getCustomerDataFromPhoneNumber(cleanedPhoneNumber.toLong())
+            return object : ApiCallback {
+                override fun checkCustomer(phoneNumber: String, onResult: (CustomerData?) -> Unit) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            val response = customerService.getCustomerDataFromPhoneNumber(cleanedPhoneNumber.toLong())
                             if (response.isSuccessful) {
                                 val responseBody = response.body() as CustomerDataResponse
                                 val customerData =
-                                    responseBody.name?.let { CustomerData(it, cleanedPhoneNumber, responseBody.isVerified, responseBody.isPhoneVerified, responseBody.oldVerificationMethod) }
+                                    responseBody.name?.let {
+                                        CustomerData(
+                                            it,
+                                            cleanedPhoneNumber,
+                                            responseBody.isVerified,
+                                            responseBody.isPhoneVerified,
+                                            responseBody.oldVerificationMethod
+                                        )
+                                    }
                                 onResult(customerData)
                             } else {
                                 onResult(null)
                             }
-                        } else {
+                        } catch (e: Exception) {
                             onResult(null)
                         }
-                    } catch (e: Exception) {
-                        onResult(null)
                     }
                 }
             }
         }
-    }
 }
 ```
 
@@ -297,7 +300,8 @@ data class CustomerData(
     val name: String,
     val phoneNumber: String,
     val isVerified: Boolean,
-    val isPhoneVerified: Boolean
+    val isPhoneVerified: Boolean,
+    val oldVerificationMethod: String,
 )
 ```
 
@@ -306,9 +310,3 @@ data class CustomerData(
 - The library uses `WindowManager` to display popups, requiring the `SYSTEM_ALERT_WINDOW` permission. Ensure this permission is granted, typically via a user prompt for overlay permissions.
 - The `ApiCallback` implementation should handle API calls efficiently to avoid delays during incoming calls.
 - If no customer data is returned (`onResult(null)`), the library will not display a popup.
-
-### Configuration Options
-
-| Method | Description | Default Value |
-| --- | --- | --- |
-| `initialize(callback: ApiCallback)` | Sets the callback for fetching customer data | None (required) 
