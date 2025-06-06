@@ -157,7 +157,7 @@ class ScannerFragment : Fragment() {
 
 ## Customer Call Tracker Library
 
-A lightweight Android library for identifying incoming calls and displaying customer information in a popup. The library intercepts incoming calls, performs an API call to verify if the caller is a customer, and shows a popup with customer details if verified, and based on the customer verfication show different color on the pop up to indicates the importance of the customer.
+A lightweight Android library for identifying incoming calls and displaying customer information in a popup. The library intercepts incoming calls, performs an API call to verify if the caller is a customer, and shows a popup with customer details if verified, and based on the customer verification show different colour on the pop up to indicates the importance of the customer.
 
 ### Features
 
@@ -216,7 +216,7 @@ dependencies {
 
 #### Setting Up the Foreground Service
 
-The library requires a foreground service to make api calls so that app will show pop up even if the phone is off or app is destroyed. 
+The library requires a foreground service to make API calls so that app will show pop up even if the phone is off or app is destroyed. 
 
 
 #### Initializing the CallerTagManager
